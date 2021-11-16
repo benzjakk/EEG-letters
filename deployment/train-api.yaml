@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: train-api
+  labels:
+    name: train-api
+spec:
+  selector:
+    matchLabels:
+        name: train-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: train-api
+    spec:
+      containers:
+      - name: train-api
+        image: ghcr.io/benzjakk/workload-api:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+        command:
+          - python3 train-api.py
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: train-api
+  labels:
+    name: train-api
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    name: train-api
